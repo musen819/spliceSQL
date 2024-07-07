@@ -16,18 +16,14 @@ import java.util.Map;
 @Slf4j
 public class GlobalConfigListener extends AnalysisEventListener<Map<Integer, String>> {
 
-
-
     @Override
     public void invoke(Map<Integer, String> data, AnalysisContext context) {
         log.info("从 {} 的 {} 中解析到一条数据：{}",
                 context.readWorkbookHolder().getFile(),
                 context.readSheetHolder().getSheetName(),
                 JSONUtil.toJsonStr(data));
+
         LoadConfigUtils.getSpliceSqlConfig().getGlobalConfigMap().put(data.get(1), data.getOrDefault(2, null));
-
-
-
     }
 
     @Override

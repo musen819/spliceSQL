@@ -19,6 +19,18 @@ import java.nio.file.Paths;
 @Slf4j
 public class OtherUtils {
 
+    private static final String CONFIG_FILE_PATH;
+    private static final Path JAR_PATH;
+
+    static {
+        CONFIG_FILE_PATH = getFilePathByName("config.xlsx");
+        try {
+            JAR_PATH = Paths.get(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * 获取config文件路径
      *
@@ -26,7 +38,16 @@ public class OtherUtils {
      * @return
      */
     public static String getFilePath () {
-        return getFilePathByName("config.xlsx");
+        return CONFIG_FILE_PATH;
+    }
+
+    /**
+     * 获取jar包 所在路径
+     *
+     * @return
+     */
+    public static String getJarPath () {
+        return CONFIG_FILE_PATH;
     }
 
     /**
@@ -37,13 +58,8 @@ public class OtherUtils {
      */
     public static String getFilePathByName(String fileName) {
         String filePath;
-        try {
-            Path jarPath =  Paths.get(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
-            filePath = jarPath.resolve(fileName).toString();
-            log.info("配置文件路径 = {}", filePath);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+        filePath = JAR_PATH.resolve(fileName).toString();
+        log.info("配置文件路径 = {}", filePath);
         return filePath;
     }
 
@@ -67,9 +83,7 @@ public class OtherUtils {
         String className = AnalyzeSqlEnum.getClassName(key);
         if (StrUtil.isBlank(className)) {
             throw new RuntimeException(String.format("未获取到该sql类型对应的类名, sql 类型 = %s", key));
-        }
-        callDefaultMethod(className);
-
+        }callDefaultMethod(className);
     }
 
     /**
@@ -82,6 +96,7 @@ public class OtherUtils {
             method.invoke(clazz.newInstance());
         } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |
                  InvocationTargetException e) {
+            log.info("获取对象实例或调用方法失败");
             throw new RuntimeException(e);
         }
     }

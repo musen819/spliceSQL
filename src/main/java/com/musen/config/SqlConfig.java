@@ -1,6 +1,7 @@
 package com.musen.config;
 
 import lombok.Data;
+import net.sf.jsqlparser.statement.Statement;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +30,8 @@ public class SqlConfig {
      */
     private Map<String, String> fieldsValueMap = new HashMap<>();
 
-
-
+    /**
+     * 为了方便快速解析SQL 引入jsqlparser
+     */
+    Statement statement = null;
 }

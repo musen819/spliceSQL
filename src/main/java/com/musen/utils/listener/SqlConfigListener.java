@@ -18,14 +18,12 @@ import java.util.Map;
 @Slf4j
 public class SqlConfigListener implements ReadListener<Map<Integer, String>> {
 
-
     @Override
     public void invoke(Map<Integer, String> data, AnalysisContext context) {
         log.info("从 {} 的 {} 中解析到一条数据：{}",
                 context.readWorkbookHolder().getFile(),
                 context.readSheetHolder().getSheetName(),
                 JSONUtil.toJsonStr(data));
-
 
         //todo 添加常量
         if (data.containsKey(0) && data.get(0) != null) {

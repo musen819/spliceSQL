@@ -1,6 +1,6 @@
 package com.musen;
 
-import com.musen.config.SpliceSqlConfig;
+import com.musen.assemble.Splice;
 import com.musen.utils.LoadConfigUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,8 +15,9 @@ public class Main {
 
         log.info("1. 获取配置");
         LoadConfigUtils.init();
-        SpliceSqlConfig spliceSqlConfig = LoadConfigUtils.getSpliceSqlConfig();
 
+        log.info("2. 组装SQL");
+        new Splice().spliceSql();
 
 
 

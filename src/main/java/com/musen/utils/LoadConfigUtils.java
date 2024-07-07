@@ -1,10 +1,13 @@
 package com.musen.utils;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
 import com.musen.config.SpliceSqlConfig;
 import com.musen.utils.listener.GlobalConfigListener;
 import com.musen.utils.listener.SqlConfigListener;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
 
 import static com.musen.utils.OtherUtils.isTrue;
 
@@ -63,6 +66,22 @@ public class LoadConfigUtils {
         String sql = LoadConfigUtils.getSpliceSqlConfig().getGlobalConfigMap().get("sql");
         String[] sqlArgs = sql.split(" ");
         OtherUtils.analyzeSql(sqlArgs[0]);
+    }
+
+    /**
+     * 获取字段映射关系
+     * 先去读 globalConfig 中的配置 看没有没有指定映射关系存放的位置
+     * @return
+     */
+    public static Map<String, String> getFieldsReflection() {
+        String path = OtherUtils.getFilePath();
+        String sheetName = "reflection";
+        if (StrUtil.isBlank(SPLICE_SQL_CONFIG.getGlobalConfigMap().get("fieldsReflectionPath"))) {
+            path = SPLICE_SQL_CONFIG.getGlobalConfigMap().get("fieldsReflectionPath");
+            sheetName = SPLICE_SQL_CONFIG.getGlobalConfigMap().get("fieldsReflectionSheet");
+        }
+        log.info("字段映射关系 path：{}, sheet: {}", sheetName, sheetName);
+        return null;
     }
 
 

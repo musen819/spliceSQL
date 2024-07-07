@@ -31,6 +31,4 @@ public class SpliceSqlConfig {
     private Map<String, String> fieldsReflectionMap = new HashMap<>();
 
 
-
-
 }
