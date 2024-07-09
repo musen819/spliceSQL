@@ -13,10 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 public class Main {
     public static void main(String[] args) {
 
-        log.info("1. 获取配置");
+        // 1. 获取全局配置 和 sql config
         LoadConfigUtils.init();
 
-        log.info("2. 组装SQL");
+        // 2. 组装SQL
         new Splice().spliceSql();
 
 

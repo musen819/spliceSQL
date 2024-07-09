@@ -20,8 +20,11 @@ import static com.musen.utils.OtherUtils.isTrue;
 @Slf4j
 public class LoadConfigUtils {
 
-    private static final SpliceSqlConfig SPLICE_SQL_CONFIG = new SpliceSqlConfig();
+    private static final SpliceSqlConfig SPLICE_SQL_CONFIG;
 
+    static {
+        SPLICE_SQL_CONFIG = new SpliceSqlConfig();
+    }
 
     /**
      * 获取配置
@@ -42,7 +45,7 @@ public class LoadConfigUtils {
         // 1. 获取全局配置
         log.info("开始读取 GlobalConfig");
         EasyExcel.read(fileName, new GlobalConfigListener()).sheet("globalConfig").doRead();
-        log.info("GlobalConfig = {}", LoadConfigUtils.getSpliceSqlConfig().getGlobalConfigMap());
+        log.info("GlobalConfig = {}", LoadConfigUtils.getSpliceSqlConfig().getGlobalConfig());
 
         //2. 获取SQL配置
         getSqlConfig(fileName);
@@ -57,7 +60,7 @@ public class LoadConfigUtils {
      */
     public static void getSqlConfig (String fileName) {
         // 判断读配置 还是 解析Sql
-        if (isTrue(LoadConfigUtils.getSpliceSqlConfig().getGlobalConfigMap().get("needLoadSqlConfig"))) {
+        if (isTrue(LoadConfigUtils.getSpliceSqlConfig().getGlobalConfig().getNeedLoadSqlConfig())) {
             log.info("开始读取 sqlConfig");
             EasyExcel.read(fileName, new SqlConfigListener()).sheet("sqlConfig").doRead();
             return;

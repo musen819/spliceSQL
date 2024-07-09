@@ -20,7 +20,7 @@ public class GlobalConfig {
     /**
      * 是否需要读取sqlConfig 默认读取
      */
-    private Boolean needLoadSqlConfig = true;
+    private String needLoadSqlConfig = String.valueOf(true);
 
     /**
      * sqlConfig Excel的位置
@@ -35,12 +35,12 @@ public class GlobalConfig {
     /**
      * 是否预组装sql
      */
-    private Boolean needPreassembly = true;
+    private String needPreassembly = String.valueOf(true);
 
     /**
      * 是否要读取数据
      */
-    private Boolean needLoadData = true;
+    private String needLoadData = String.valueOf(true);
 
     /**
      * 数据文件存放的位置
@@ -55,7 +55,7 @@ public class GlobalConfig {
     /**
      * 是否需要字段映射
      */
-    private Boolean needFieldsReflection = true;
+    private String needFieldsReflection = String.valueOf(true);
 
     /**
      * 字段映射配置的文件位置
@@ -70,7 +70,7 @@ public class GlobalConfig {
     /**
      * 是否有需要计算的字段
      */
-    private Boolean needCalculatedField = true;
+    private String needCalculatedField = String.valueOf(true);
 
     /**
      * 字段计算类位置
@@ -85,7 +85,7 @@ public class GlobalConfig {
     /**
      * 是否保存日志
      */
-    private Boolean saveLogs = true;
+    private String saveLogs = String.valueOf(true);
 
     /**
      * 日志存放位置
@@ -95,5 +95,5 @@ public class GlobalConfig {
     /**
      * 是否直接保存到数据库
      */
-    private Boolean saveToDataBase = false;
+    private String saveToDataBase = String.valueOf(false);
 }

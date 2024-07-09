@@ -15,9 +15,8 @@ public class SpliceSqlConfig {
 
     /**
      * 全局配置
-     *
      */
-    private Map<String, String> globalConfigMap = new HashMap<>();
+    private GlobalConfig globalConfig;
 
     /**
      * Sql 配置
