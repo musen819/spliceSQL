@@ -1,8 +1,11 @@
 package com.musen.utils;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
+import com.musen.config.GlobalConfig;
 import com.musen.config.SpliceSqlConfig;
+import com.musen.config.SqlConfig;
 import com.musen.utils.listener.GlobalConfigListener;
 import com.musen.utils.listener.SqlConfigListener;
 import lombok.extern.slf4j.Slf4j;
@@ -27,16 +30,6 @@ public class LoadConfigUtils {
     }
 
     /**
-     * 获取配置
-     *
-     * @return
-     */
-    public static SpliceSqlConfig getSpliceSqlConfig () {
-        return SPLICE_SQL_CONFIG;
-    }
-
-
-    /**
      * 初始化，获取全局配置 和 Sql配置
      */
     public static void init() {
@@ -45,35 +38,37 @@ public class LoadConfigUtils {
         // 1. 获取全局配置
         log.info("开始读取 GlobalConfig");
         EasyExcel.read(fileName, new GlobalConfigListener()).sheet("globalConfig").doRead();
-        log.info("GlobalConfig = {}", LoadConfigUtils.getSpliceSqlConfig().getGlobalConfig());
+        log.info("GlobalConfig = {}", JSONUtil.toJsonStr(LoadConfigUtils.getGlobalConfig()));
 
         //2. 获取SQL配置
-        getSqlConfig(fileName);
-        log.info("SqlConfig = {}", LoadConfigUtils.getSpliceSqlConfig().getSqlConfig());
+        loadSqlConfig();
+        log.info("SqlConfig = {}", JSONUtil.toJsonStr(LoadConfigUtils.getSqlConfig()));
 
     }
 
     /**
      * 获取Sql配置
-     *
-     * @param fileName
      */
-    public static void getSqlConfig (String fileName) {
-        // 判断读配置 还是 解析Sql
-        if (isTrue(LoadConfigUtils.getSpliceSqlConfig().getGlobalConfig().getNeedLoadSqlConfig())) {
+    public static void loadSqlConfig () {
+        // 判断 是否要读配置
+        if (isTrue(LoadConfigUtils.getGlobalConfig().getNeedLoadSqlConfig())) {
             log.info("开始读取 sqlConfig");
-            EasyExcel.read(fileName, new SqlConfigListener()).sheet("sqlConfig").doRead();
+            String sqlConfigPath = LoadConfigUtils.getGlobalConfig().getSqlConfigPath();
+            String sqlConfigSheet = LoadConfigUtils.getGlobalConfig().getSqlConfigSheet();
+            EasyExcel.read(sqlConfigPath, new SqlConfigListener()).sheet(sqlConfigSheet).doRead();
             return;
         }
         log.info("开始解析 sql");
-        String sql = LoadConfigUtils.getSpliceSqlConfig().getGlobalConfigMap().get("sql");
+        String sql = LoadConfigUtils.getGlobalConfig().getSql();
         String[] sqlArgs = sql.split(" ");
         OtherUtils.analyzeSql(sqlArgs[0]);
+        // 覆盖sql
     }
 
     /**
      * 获取字段映射关系
      * 先去读 globalConfig 中的配置 看没有没有指定映射关系存放的位置
+     *
      * @return
      */
     public static Map<String, String> getFieldsReflection() {
@@ -88,6 +83,20 @@ public class LoadConfigUtils {
     }
 
 
+    /**
+     * 获取配置
+     *
+     */
+    public static SpliceSqlConfig getSpliceSqlConfig () {
+        return SPLICE_SQL_CONFIG;
+    }
 
+    public static GlobalConfig getGlobalConfig () {
+        return SPLICE_SQL_CONFIG.getGlobalConfig();
+    }
+
+    public static SqlConfig getSqlConfig () {
+        return SPLICE_SQL_CONFIG.getSqlConfig();
+    }
 
 }

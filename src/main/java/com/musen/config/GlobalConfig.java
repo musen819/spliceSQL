@@ -3,6 +3,7 @@ package com.musen.config;
 import com.musen.utils.OtherUtils;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,7 +51,7 @@ public class GlobalConfig {
     /**
      * 数据文件 sheet页名字
      */
-    private List<String> dataFileSheet;
+    private List<String> dataFileSheet = new ArrayList<>();
 
     /**
      * 是否需要字段映射

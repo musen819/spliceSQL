@@ -1,14 +1,14 @@
 package com.musen.utils.listener;
 
-import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.musen.config.GlobalConfig;
+import com.musen.utils.LoadConfigUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -19,25 +19,41 @@ import java.util.Map;
 @Slf4j
 public class GlobalConfigListener extends AnalysisEventListener<Map<Integer, String>> {
 
-    static Map<String, Object> globalConfigMap = new HashMap<>();
     static GlobalConfig globalConfig = new GlobalConfig();
 
     @Override
     public void invoke(Map<Integer, String> data, AnalysisContext context) {
+        log.info("从 {} 的 {} 中解析到一条数据：{}",
+                context.readWorkbookHolder().getFile(),
+                context.readSheetHolder().getSheetName(),
+                JSONUtil.toJsonStr(data));
+
         saveToClass(data.get(1), data.getOrDefault(2, null));
     }
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
+        LoadConfigUtils.getSpliceSqlConfig().setGlobalConfig(globalConfig);
         log.info("globalConfig 读取完成");
     }
 
-    private void saveToClass (String key, Object value) {
-        if (StrUtil.isBlank(key) || ObjUtil.isEmpty(value)) {
+    /**
+     * 将数据保存到 globalConfig 中
+     *
+     * @param key
+     * @param value
+     */
+    private void saveToClass (String key, String value) {
+        if (StrUtil.isBlank(key) || StrUtil.isBlank(value)) {
             // 如果碰到空行  或者  value为空 跳出本次循环
             return;
         }
-        // todo 增加数据源sheet页 配置
+        // 数据源 有多个 sheet页
+        if ("dataFileSheet".equals(key)) {
+            // 判断当前配置 list中是否有数据
+            globalConfig.getDataFileSheet().add(value);
+            return;
+        }
         Field field;
         try {
             // 获取字段

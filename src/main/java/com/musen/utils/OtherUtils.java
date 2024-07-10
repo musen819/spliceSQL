@@ -19,17 +19,10 @@ import java.nio.file.Paths;
 @Slf4j
 public class OtherUtils {
 
-    private static final String CONFIG_FILE_PATH;
-    private static final Path JAR_PATH;
+    private static final String CONFIG_FILE_PATH = getFilePathByName("config.xlsx");
+    private static volatile Path jarPath;
 
-    static {
-        CONFIG_FILE_PATH = getFilePathByName("config.xlsx");
-        try {
-            JAR_PATH = Paths.get(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
 
     /**
      * 获取config文件路径
@@ -46,8 +39,19 @@ public class OtherUtils {
      *
      * @return
      */
-    public static String getJarPath () {
-        return CONFIG_FILE_PATH;
+    public static Path getJarPath () {
+        if (jarPath == null) {
+            synchronized (OtherUtils.class) {
+                if (jarPath == null) {
+                    try {
+                        jarPath = Paths.get(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+        return jarPath;
     }
 
     /**
@@ -58,7 +62,7 @@ public class OtherUtils {
      */
     public static String getFilePathByName(String fileName) {
         String filePath;
-        filePath = JAR_PATH.resolve(fileName).toString();
+        filePath = getJarPath().resolve(fileName).toString();
         log.info("配置文件路径 = {}", filePath);
         return filePath;
     }
