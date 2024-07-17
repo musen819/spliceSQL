@@ -1,9 +1,20 @@
 package com.musen.analyze;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.StringValue;
+import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.schema.Column;
+import net.sf.jsqlparser.schema.Table;
+import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.insert.Insert;
+
+import java.util.Map;
+
+import static com.musen.utils.OtherUtils.isTrue;
 
 /**
  * @Author: musen
@@ -14,29 +25,66 @@ import net.sf.jsqlparser.statement.insert.Insert;
 public class AnalyzeInsert implements AnalyzeSql{
 
     @Override
+    public void analyzeSqlBySqlConfig() {
+
+    }
+
+    @Override
     public void analyzeSql() {
-        String sql = GLOBAL_CONFIG.get("sql");
+        String sql = GLOBAL_CONFIG.getSql();
+        // 当sql中 value部分有空值的时候  使用jsqlparser 解析Sql 会报错 先遍历一次sql 防止这种情况
+        String[] sqlArgs = sql.split(",");
+        for (int i = 0; i < sqlArgs.length; i++) {
+            if (StrUtil.isBlank(sqlArgs[i])) {
+                sqlArgs[i] = " NULL";
+            }
+        }
+        sql = StrUtil.join(",", (Object) sqlArgs);
+
         Insert insert;
         try {
             insert = (Insert) CCJSqlParserUtil.parse(sql);
-            SQL_CONFIG.setStatement(insert);
-            log.info("【插入目标表】： {}", insert.getTable());
-            log.info("【插入字段】： {}", insert.getColumns());
-            log.info("【插入值】： {}", insert.getValues());
-            SQL_CONFIG.setSqlType("INSERT");
-            SQL_CONFIG.setTableName(insert.getTable().toString());
-            for (int i = 0; i < insert.getColumns().size(); i++) {
-                String tempField = insert.getColumns().get(i).toString();
-                String tempValue = insert.getValues().getExpressions().get(i).toString();
-                SQL_CONFIG.getFieldsValueMap().put(tempField, tempValue);
-            }
-            log.info("sql 解析完成");
         } catch (JSQLParserException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("jsqlparser 解析 sql 失败", e);
         }
 
-        // TODO
-        // 当insert语句中 value部分有空值的事后  使用jsqlparser 解析Sql 会报错  需要手工解析
+        if (!isTrue(GLOBAL_CONFIG.getNeedLoadSqlConfig())) {
+            SQL_CONFIG.setStatement(insert);
+            return;
+        }
 
+        // 将 sqlConfig 中的配置 合并到 statement 中
+        if (!AnalyzeSqlEnum.INSERT.name().equals(SQL_CONFIG.getSqlType()) || !AnalyzeSqlEnum.INSERT_MAJUSCULE.name().equals(SQL_CONFIG.getSqlType())  ) {
+            throw new RuntimeException(String.format("insert解析类 不能解析 %s 的sql", SQL_CONFIG.getSqlType()));
+        }
+        if (!insert.getTable().getName().equals(SQL_CONFIG.getTableName())) {
+            Table table = new Table(SQL_CONFIG.getTableName());
+            insert.setTable(table);
+        }
+        // 更新值列表
+        insert = (Insert) replace(insert, SQL_CONFIG.getFieldsValueMap());
+        SQL_CONFIG.setStatement(insert);
+
+    }
+
+    @Override
+    public Statement replace(Statement statement, Map<String, String> map) {
+        Insert insert;
+        if (statement instanceof Insert) {
+            insert = (Insert) statement;
+        } else {
+            throw new RuntimeException("字段替换失败");
+        }
+        Map<String, String> fieldsValueMap = SQL_CONFIG.getFieldsValueMap();
+        ExpressionList<Column> columns = insert.getColumns();
+        ExpressionList<Expression> values = (ExpressionList<Expression>) insert.getValues().getExpressions();
+        for (int i = 0; i < columns.size(); i++) {
+            String columnName = columns.get(i).getColumnName();
+            if (fieldsValueMap.containsKey(columnName) && i < values.size()) {
+                String newValue = fieldsValueMap.get(columnName);
+                values.set(i, new StringValue(newValue));
+            }
+        }
+        return insert;
     }
 }

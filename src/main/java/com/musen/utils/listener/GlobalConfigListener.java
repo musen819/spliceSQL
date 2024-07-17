@@ -50,7 +50,6 @@ public class GlobalConfigListener extends AnalysisEventListener<Map<Integer, Str
         }
         // 数据源 有多个 sheet页
         if ("dataFileSheet".equals(key)) {
-            // 判断当前配置 list中是否有数据
             globalConfig.getDataFileSheet().add(value);
             return;
         }

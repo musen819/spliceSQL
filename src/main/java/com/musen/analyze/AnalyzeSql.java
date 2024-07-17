@@ -1,7 +1,9 @@
 package com.musen.analyze;
 
+import com.musen.config.GlobalConfig;
 import com.musen.config.SqlConfig;
 import com.musen.utils.LoadConfigUtils;
+import net.sf.jsqlparser.statement.Statement;
 
 import java.util.Map;
 
@@ -12,13 +14,23 @@ import java.util.Map;
  */
 public interface AnalyzeSql {
 
-    SqlConfig SQL_CONFIG = LoadConfigUtils.getSpliceSqlConfig().getSqlConfig();
+    SqlConfig SQL_CONFIG = LoadConfigUtils.getSqlConfig();
 
-    Map<String, String> GLOBAL_CONFIG = LoadConfigUtils.getSpliceSqlConfig().getGlobalConfigMap();
+    GlobalConfig GLOBAL_CONFIG = LoadConfigUtils.getGlobalConfig();
 
-    default void defaultMethod() {
-        analyzeSql();
-    }
+    /**
+     * 解析 sql
+     * 把读取到的 sqlConfig 加载到 statement 中
+     *
+     */
+    void analyzeSqlBySqlConfig();
 
+    /**
+     * 解析 sql
+     * 把 sql 加载到 statement 中
+     *
+     */
     void analyzeSql();
+
+    Statement replace(Statement statement, Map<String, String> map);
 }

@@ -13,6 +13,12 @@ import java.util.List;
  */
 @Data
 public class GlobalConfig {
+
+    /**
+     * 是否需要读sql
+     */
+    private String needLoadSql = String.valueOf(true);
+
     /**
      * sql
      */
@@ -37,6 +43,21 @@ public class GlobalConfig {
      * 是否预组装sql
      */
     private String needPreassembly = String.valueOf(true);
+
+    /**
+     * 是否保存预组装sql
+     */
+    private String savePreassembly = String.valueOf(true);
+
+    /**
+     * 预组装sql保存路径
+     */
+    private String savePreassemblyPath = OtherUtils.getFilePath();
+
+    /**
+     * 预组装sql保存sheet页
+     */
+    private String savePreassemblySheet = "preassemblySql";
 
     /**
      * 是否要读取数据

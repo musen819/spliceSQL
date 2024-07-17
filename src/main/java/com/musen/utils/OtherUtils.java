@@ -4,12 +4,14 @@ import cn.hutool.core.util.StrUtil;
 import com.musen.Main;
 import com.musen.analyze.AnalyzeSqlEnum;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jsqlparser.statement.Statement;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 /**
  * @Author: musen
@@ -21,7 +23,6 @@ public class OtherUtils {
 
     private static final String CONFIG_FILE_PATH = getFilePathByName("config.xlsx");
     private static volatile Path jarPath;
-
 
 
     /**
@@ -79,30 +80,42 @@ public class OtherUtils {
 
     /**
      * 解析sql
-     * 根据传来的sql类型，通过枚举类获取类名，调用 callDefaultMethod 执行默认方法
+     * 根据传来的sql类型，通过枚举类获取类名，调用 callDefaultMethod 执行对应方法
      *
-     * @param key sql类型
+     * @param sqlType
+     * @param methodName
      */
-    public static void analyzeSql (String key) {
-        String className = AnalyzeSqlEnum.getClassName(key);
+    public static void analyzeSql (String sqlType, String methodName) {
+        String className = AnalyzeSqlEnum.getClassName(sqlType);
         if (StrUtil.isBlank(className)) {
-            throw new RuntimeException(String.format("未获取到该sql类型对应的类名, sql 类型 = %s", key));
-        }callDefaultMethod(className);
+            throw new RuntimeException(String.format("未获取到该sql类型对应的类名, sql 类型 = %s", sqlType));
+        }
+        callMethod(className, methodName);
     }
 
     /**
-     * 根据className，获取实例并调用默认方法
+     * 根据className，获取实例并调用 methodName 方法
      */
-    public static void callDefaultMethod(String className) {
+    public static void callMethod(String className, String methodName) {
         try {
             Class<?> clazz = Class.forName(className);
-            Method method = clazz.getMethod("defaultMethod");
+            Method method = clazz.getMethod(methodName);
             method.invoke(clazz.newInstance());
         } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |
                  InvocationTargetException e) {
-            log.info("获取对象实例或调用方法失败");
-            throw new RuntimeException(e);
+            throw new RuntimeException("获取对象实例或调用方法失败", e);
         }
     }
 
+    public static Statement callMethod(String className, String methodName, Statement statement, Map<String, String> map) {
+        try {
+            Class<?> clazz = Class.forName(className);
+            Method method = clazz.getMethod(methodName, Statement.class, Map.class);
+            statement = (Statement) method.invoke(clazz.newInstance(), statement, map);
+        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |
+                 InvocationTargetException e) {
+            throw new RuntimeException("获取对象实例或调用方法失败", e);
+        }
+        return statement;
+    }
 }
