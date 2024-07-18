@@ -1,5 +1,6 @@
 package com.musen.utils.listener;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.util.ListUtils;
@@ -51,14 +52,14 @@ public class LoadDataListener extends AnalysisEventListener<Map<Integer, String>
     private static final GlobalConfig GLOBAL_CONFIG = LoadConfigUtils.getGlobalConfig();
     private static final Map<String,String> FIELDS_REFLECTION_MAP = LoadConfigUtils.getFieldsReflection();
 
-    private static Statement statement;
+    private static Statement statement = SQL_CONFIG.getStatement();
     private static FileWriter fileWriter;
     private static final BufferedWriter BUFFERED_WRITER;
 
 
     static {
         // 为了避免影响sqlConfig 中的配置  使用深拷贝  序列化 + 反序列化 实现
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        /*ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos;
         ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
         try {
@@ -69,12 +70,12 @@ public class LoadDataListener extends AnalysisEventListener<Map<Integer, String>
             statement = (Statement) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException("深拷贝失败", e);
-        }
+        }*/
 
         // 提前打开要写的文件，整个文件读完 在关闭
         try {
             // true表示追加模式，如果希望覆盖则改为 false
-            fileWriter = new FileWriter(GLOBAL_CONFIG.getResultFilePath(), true);
+            fileWriter = new FileWriter(GLOBAL_CONFIG.getResultFilePath(), false);
         } catch (IOException e) {
             log.error("打开文件失败", e);
         }
@@ -88,7 +89,12 @@ public class LoadDataListener extends AnalysisEventListener<Map<Integer, String>
      */
     @Override
     public void invokeHeadMap(Map<Integer, String> headMap, AnalysisContext context) {
-        headerForExcelData = (List<String>) headMap.values();
+        for (Map.Entry<Integer, String> entry : headMap.entrySet()) {
+            String columnName = entry.getValue();
+            if (StrUtil.isNotBlank(columnName)) {
+                headerForExcelData.add(columnName);
+            }
+        }
     }
 
 
@@ -97,8 +103,14 @@ public class LoadDataListener extends AnalysisEventListener<Map<Integer, String>
     public void invoke(Map<Integer, String> data, AnalysisContext context) {
         Map<String, String> datamap = new HashMap<>();
         // 1. 通过表头 替换掉原statement 中的部分value
+        Integer index = 0;
         for (Map.Entry<Integer, String> entry : data.entrySet()) {
-            String columnName = headerForExcelData.get(entry.getKey());
+            String value = entry.getValue();
+            if (StrUtil.isBlank(value)) {
+                index++;
+                continue;
+            }
+            String columnName = headerForExcelData.get(entry.getKey() - index);
             if (FIELDS_REFLECTION_MAP.containsKey(columnName)) {
                 columnName = FIELDS_REFLECTION_MAP.get(columnName);
             }

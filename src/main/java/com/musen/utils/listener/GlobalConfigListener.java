@@ -1,7 +1,6 @@
 package com.musen.utils.listener;
 
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.musen.config.GlobalConfig;
@@ -23,10 +22,10 @@ public class GlobalConfigListener extends AnalysisEventListener<Map<Integer, Str
 
     @Override
     public void invoke(Map<Integer, String> data, AnalysisContext context) {
-        log.info("从 {} 的 {} 中解析到一条数据：{}",
+        /*log.info("从 {} 的 {} 中解析到一条数据：{}",
                 context.readWorkbookHolder().getFile(),
                 context.readSheetHolder().getSheetName(),
-                JSONUtil.toJsonStr(data));
+                JSONUtil.toJsonStr(data));*/
 
         saveToClass(data.get(1), data.getOrDefault(2, null));
     }

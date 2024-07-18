@@ -88,11 +88,13 @@ public class LoadConfigUtils {
            }
            String[] sqlArgs = sql.split(" ");
            OtherUtils.analyzeSql(sqlArgs[0], "analyzeSql");
+           return;
        }
 
        if (needSqlConfig) {
            // 将sqlConfig 中的内容加载到 statement 中
            OtherUtils.analyzeSql(LoadConfigUtils.getSqlConfig().getSqlType(), "analyzeSqlBySqlConfig");
+           return;
        }
 
         throw new RuntimeException(String.format("needLoadSql = %s ,needLoadSqlConfig = %s  必须有一个为true",
@@ -106,7 +108,7 @@ public class LoadConfigUtils {
      * @return
      */
     public static Map<String, String> getFieldsReflection() {
-        if (SPLICE_SQL_CONFIG.getFieldsReflectionMap() != null) {
+        if (SPLICE_SQL_CONFIG.getFieldsReflectionMap() != null && SPLICE_SQL_CONFIG.getFieldsReflectionMap().size() != 0) {
             return SPLICE_SQL_CONFIG.getFieldsReflectionMap();
         }
 

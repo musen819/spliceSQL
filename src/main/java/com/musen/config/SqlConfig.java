@@ -17,7 +17,7 @@ public class SqlConfig {
     /**
      * sql 类型
      */
-    private String sqlType;
+    private String sqlType = "insert";
 
     /**
      * 要插入的表名

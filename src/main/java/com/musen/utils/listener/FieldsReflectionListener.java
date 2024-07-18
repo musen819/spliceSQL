@@ -21,10 +21,10 @@ public class FieldsReflectionListener extends AnalysisEventListener<Map<Integer,
     @Override
     public void invoke(Map<Integer, String> data, AnalysisContext context) {
         index++;
-        if (StrUtil.isNotBlank(data.get(1)) && StrUtil.isNotBlank(data.getOrDefault(2, null))) {
+        if (StrUtil.isBlank(data.get(0)) && StrUtil.isBlank(data.getOrDefault(1, null))) {
             throw new RuntimeException(String.format("数据表中字段名 和 数据库中字段名 必须同时有值, 报错行 %s", index));
         }
-        fieldsReflectionMap.put(data.get(1), data.get(2));
+        fieldsReflectionMap.put(data.get(0), data.get(1));
     }
 
     @Override

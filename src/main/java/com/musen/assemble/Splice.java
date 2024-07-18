@@ -47,7 +47,7 @@ public class Splice {
                     dataFilePath, JSONUtil.toJsonStr(dataFileSheetList)));
         }
         for (String dataFileSheet : dataFileSheetList) {
-            EasyExcel.read(dataFileSheet, new LoadDataListener()).sheet(dataFileSheet).doRead();
+            EasyExcel.read(dataFilePath, new LoadDataListener()).sheet(dataFileSheet).doRead();
         }
         log.info("开始读取数据，生成SQL");
         // 使用模板方法  因为读数据的时候 每读一条数据 都会执行一次 invoke方法

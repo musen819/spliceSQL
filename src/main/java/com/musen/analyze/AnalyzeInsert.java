@@ -54,9 +54,9 @@ public class AnalyzeInsert implements AnalyzeSql{
         }
 
         // 将 sqlConfig 中的配置 合并到 statement 中
-        if (!AnalyzeSqlEnum.INSERT.name().equals(SQL_CONFIG.getSqlType()) || !AnalyzeSqlEnum.INSERT_MAJUSCULE.name().equals(SQL_CONFIG.getSqlType())  ) {
+        /*if (!AnalyzeSqlEnum.INSERT.name().equals(SQL_CONFIG.getSqlType()) || !AnalyzeSqlEnum.INSERT_MAJUSCULE.name().equals(SQL_CONFIG.getSqlType())  ) {
             throw new RuntimeException(String.format("insert解析类 不能解析 %s 的sql", SQL_CONFIG.getSqlType()));
-        }
+        }*/
         if (!insert.getTable().getName().equals(SQL_CONFIG.getTableName())) {
             Table table = new Table(SQL_CONFIG.getTableName());
             insert.setTable(table);
@@ -75,7 +75,7 @@ public class AnalyzeInsert implements AnalyzeSql{
         } else {
             throw new RuntimeException("字段替换失败");
         }
-        Map<String, String> fieldsValueMap = SQL_CONFIG.getFieldsValueMap();
+        Map<String, String> fieldsValueMap = map;
         ExpressionList<Column> columns = insert.getColumns();
         ExpressionList<Expression> values = (ExpressionList<Expression>) insert.getValues().getExpressions();
         for (int i = 0; i < columns.size(); i++) {
