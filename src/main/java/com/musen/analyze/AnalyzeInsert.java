@@ -87,4 +87,6 @@ public class AnalyzeInsert implements AnalyzeSql{
         }
         return insert;
     }
+
+
 }

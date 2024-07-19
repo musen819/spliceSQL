@@ -47,7 +47,11 @@ public class Splice {
                     dataFilePath, JSONUtil.toJsonStr(dataFileSheetList)));
         }
         for (String dataFileSheet : dataFileSheetList) {
-            EasyExcel.read(dataFilePath, new LoadDataListener()).sheet(dataFileSheet).doRead();
+            try {
+                EasyExcel.read(dataFilePath, new LoadDataListener()).sheet(dataFileSheet).doRead();
+            } catch (RuntimeException e) {
+                throw new RuntimeException(String.format("dataFilePath = %s, dataFileSheet = %s 文件路径不正确", dataFilePath, dataFileSheet));
+            }
         }
         log.info("开始读取数据，生成SQL");
         // 使用模板方法  因为读数据的时候 每读一条数据 都会执行一次 invoke方法

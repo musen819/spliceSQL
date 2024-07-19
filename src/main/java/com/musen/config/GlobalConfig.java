@@ -95,6 +95,11 @@ public class GlobalConfig {
     private String needCalculatedField = String.valueOf(true);
 
     /**
+     * 缓存字段计算类
+     */
+    private String needCacheCalculatedFieldClass = String.valueOf(true);
+
+    /**
      * 字段计算类位置
      */
     private String calculatedClassPath = OtherUtils.getFilePath();

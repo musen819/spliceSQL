@@ -59,6 +59,7 @@ public class LoadDataListener extends AnalysisEventListener<Map<Integer, String>
 
     static {
         // 为了避免影响sqlConfig 中的配置  使用深拷贝  序列化 + 反序列化 实现
+        // todo 实现深拷贝
         /*ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos;
         ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
