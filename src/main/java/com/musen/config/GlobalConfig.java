@@ -105,6 +105,16 @@ public class GlobalConfig {
     private String calculatedClassPath = OtherUtils.getFilePath();
 
     /**
+     * 字段计算类类名
+     */
+    private String calculatedClassName = "FieldsCalculated.java";
+
+    /**
+     * 字段计算类编译后存放位置
+     */
+    private String compileCalculatedClassName = OtherUtils.getFilePath();
+
+    /**
      * 结果存放的位置
      */
     private String resultFilePath = OtherUtils.getJarPath() + "\\resultFile.sql";
