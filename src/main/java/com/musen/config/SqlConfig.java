@@ -26,7 +26,7 @@ public class SqlConfig {
 
     /**
      * 字段，如果是固定值，会在读取的时候赋值
-     * 不是固定值，默认赋值 noValue
+     * 不是固定值，默认赋值 {}
      */
     private Map<String, String> fieldsValueMap = new HashMap<>();
 

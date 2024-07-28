@@ -35,18 +35,22 @@ public class FieldsCalculatedClassUtils {
      * @param methodName
      * @return
      */
-    public String invokeMethod(String methodName) {
+    public static String invokeMethod(String methodName, Object ... params) {
 
-        Class<?> loadedClass = getInstance();
+        Class<?> loadedClass = getFieldsCalculatedClass();
+
+        Class<?>[] parameterTypes = new Class<?>[params.length];
+        for (int i = 0; i < params.length; i++) {
+            // 读取的时候 会校验参数不能为空  如果参数可能为空 需要专门对空参数进行处理
+            // 因为如果 params[i] == null 的话 params[i].getClass() 会报错
+            parameterTypes[i] = params[i].getClass();
+        }
 
         // 获取指定方法名的方法
-        Method method = null;
+        Method method;
         try {
-            method = loadedClass.getMethod(methodName);
-            // 如果方法是静态的，可以直接调用 invoke(null)
-            // 如果方法是实例方法，需要先创建实例对象，然后调用 invoke(instance)
-            // 这里假设 myMethod 是静态方法，直接调用 invoke(null)
-            return (String) method.invoke(null);
+            method = loadedClass.getMethod(methodName, parameterTypes);
+            return (String) method.invoke(null, params);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(String.format("获取方法失败, 方法名： %s", methodName), e);
         } catch (InvocationTargetException | IllegalAccessException e) {
@@ -57,14 +61,14 @@ public class FieldsCalculatedClassUtils {
     /**
      * 获取实例
      */
-    public static Class<?> getInstance() {
+    public static Class<?> getFieldsCalculatedClass() {
         if (!OtherUtils.isTrue(GLOBAL_CONFIG.getNeedCacheCalculatedFieldClass())) {
-            return newInstance();
+            return loadFieldsCalculatedClass();
         }
         if (cacheFieldsCalculated == null) {
             synchronized (FieldsCalculatedClassUtils.class) {
                 if (cacheFieldsCalculated == null) {
-                    cacheFieldsCalculated = newInstance();
+                    cacheFieldsCalculated = loadFieldsCalculatedClass();
                 }
             }
         }
@@ -72,17 +76,20 @@ public class FieldsCalculatedClassUtils {
     }
 
     /**
-     * 创建实例
+     * 加载类
      */
-    public static Class<?> newInstance() {
+    public static Class<?> loadFieldsCalculatedClass() {
 
         String classDir = GLOBAL_CONFIG.getCalculatedClassPath();
         String className = GLOBAL_CONFIG.getCalculatedClassName();
 
-        String sourcePath = StrUtil.concat(false, classDir, "/", className);
+        String sourcePath = StrUtil.concat(false, classDir, "\\", className, ".java");
         String outputPath = GLOBAL_CONFIG.getCompileCalculatedClassName();
 
-        compileClass(sourcePath, outputPath);
+        // 编译类
+        if (OtherUtils.isTrue(GLOBAL_CONFIG.getRecompileOrNot())) {
+            compileClass(sourcePath, outputPath);
+        }
         URLClassLoader classLoader = null;
 
         try {

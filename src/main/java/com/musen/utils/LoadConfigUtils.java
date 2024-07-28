@@ -4,14 +4,14 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
+import com.musen.config.FieldCalculated;
 import com.musen.config.GlobalConfig;
 import com.musen.config.SpliceSqlConfig;
 import com.musen.config.SqlConfig;
-import com.musen.utils.listener.FieldsReflectionListener;
-import com.musen.utils.listener.GlobalConfigListener;
-import com.musen.utils.listener.SqlConfigListener;
+import com.musen.utils.listener.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.musen.utils.OtherUtils.isTrue;
@@ -49,7 +49,6 @@ public class LoadConfigUtils {
         //2. 获取SQL配置
         loadSqlConfig();
         log.info("SqlConfig = {}", JSONUtil.toJsonStr(LoadConfigUtils.getSqlConfig()));
-
     }
 
     /**
@@ -108,25 +107,68 @@ public class LoadConfigUtils {
      * @return
      */
     public static Map<String, String> getFieldsReflection() {
-        if (SPLICE_SQL_CONFIG.getFieldsReflectionMap() != null && SPLICE_SQL_CONFIG.getFieldsReflectionMap().size() != 0) {
-            return SPLICE_SQL_CONFIG.getFieldsReflectionMap();
-        }
-
-        String fieldsReflectionPath = LoadConfigUtils.getGlobalConfig().getFieldsReflectionPath();
-        String fieldsReflectionSheet = LoadConfigUtils.getGlobalConfig().getFieldsReflectionSheet();
         if (!isTrue(LoadConfigUtils.getGlobalConfig().getNeedFieldsReflection())) {
             throw new RuntimeException("needFieldsReflection = false, 不能调用获取字段映射方法");
         }
+        if (SPLICE_SQL_CONFIG.getFieldsReflectionMap() != null && SPLICE_SQL_CONFIG.getFieldsReflectionMap().size() != 0) {
+            return SPLICE_SQL_CONFIG.getFieldsReflectionMap();
+        }
+        String fieldsReflectionPath = LoadConfigUtils.getGlobalConfig().getFieldsReflectionPath();
+        String fieldsReflectionSheet = LoadConfigUtils.getGlobalConfig().getFieldsReflectionSheet();
         if (StrUtil.isBlank(fieldsReflectionPath) || StrUtil.isBlank(fieldsReflectionSheet)) {
             throw new RuntimeException("needFieldsReflection = true, fieldsReflectionPath 和 fieldsReflectionSheet 不能为空");
         }
         log.info("字段映射关系 path：{}, sheet: {}", fieldsReflectionPath, fieldsReflectionSheet);
         EasyExcel.read(fieldsReflectionPath, new FieldsReflectionListener()).sheet(fieldsReflectionSheet).doRead();
-        log.info("SqlConfig = {}", JSONUtil.toJsonStr(SPLICE_SQL_CONFIG.getFieldsReflectionMap()));
+        log.info("fieldsReflectionMap = {}", JSONUtil.toJsonStr(SPLICE_SQL_CONFIG.getFieldsReflectionMap()));
         return SPLICE_SQL_CONFIG.getFieldsReflectionMap();
     }
 
+    /**
+     * 获取字段计算配置
+     *
+     * @return
+     */
+    public static List<FieldCalculated> getFieldCalculatedList() {
+        if (!isTrue(LoadConfigUtils.getGlobalConfig().getNeedCalculatedField())) {
+            throw new RuntimeException("needCalculatedField = false, 不能调用获取字段计算配置方法");
+        }
+        if (SPLICE_SQL_CONFIG.getFieldCalculatedList() != null && SPLICE_SQL_CONFIG.getFieldCalculatedList().size() != 0) {
+            return SPLICE_SQL_CONFIG.getFieldCalculatedList();
+        }
+        String calculatedClassConfigPath = LoadConfigUtils.getGlobalConfig().getCompileCalculatedClassName();
+        String calculatedClassConfigSheet = LoadConfigUtils.getGlobalConfig().getCalculatedClassConfigSheet();
+        if (StrUtil.isBlank(calculatedClassConfigPath) || StrUtil.isBlank(calculatedClassConfigSheet)) {
+            throw new RuntimeException("needCalculatedField = true, calculatedClassConfigPath 和 calculatedClassConfigSheet 不能为空");
+        }
+        log.info("字段计算配置 path：{}, sheet: {}", calculatedClassConfigPath, calculatedClassConfigSheet);
+        EasyExcel.read(calculatedClassConfigPath, new FieldCalculatedListener()).sheet(calculatedClassConfigSheet).doRead();
+        log.info("fieldCalculatedList = {}", JSONUtil.toJsonStr(SPLICE_SQL_CONFIG.getFieldCalculatedList()));
+        return SPLICE_SQL_CONFIG.getFieldCalculatedList();
+    }
 
+    /**
+     * 获取字段删除配置
+     *
+     * @return
+     */
+    public static List<String> getDeleteFieldList() {
+        if (!isTrue(LoadConfigUtils.getGlobalConfig().getDeleteFieldsOrNot())) {
+            throw new RuntimeException("deleteFieldsOrNot = false, 不能调用获取字段删除配置方法");
+        }
+        if (SPLICE_SQL_CONFIG.getDeleteFieldList() != null && SPLICE_SQL_CONFIG.getDeleteFieldList().size() != 0) {
+            return SPLICE_SQL_CONFIG.getDeleteFieldList();
+        }
+        String deleteFieldsConfigPath = LoadConfigUtils.getGlobalConfig().getDeleteFieldsConfigPath();
+        String deleteFieldsConfigSheet = LoadConfigUtils.getGlobalConfig().getDeleteFieldsConfigSheet();
+        if (StrUtil.isBlank(deleteFieldsConfigPath) || StrUtil.isBlank(deleteFieldsConfigSheet)) {
+            throw new RuntimeException("needCalculatedField = true, deleteFieldsConfigPath 和 deleteFieldsConfigSheet 不能为空");
+        }
+        log.info("字段删除配置 path：{}, sheet: {}", deleteFieldsConfigPath, deleteFieldsConfigSheet);
+        EasyExcel.read(deleteFieldsConfigPath, new DeleteFieldListener()).sheet(deleteFieldsConfigSheet).doRead();
+        log.info("deleteFieldList = {}", JSONUtil.toJsonStr(SPLICE_SQL_CONFIG.getDeleteFieldList()));
+        return SPLICE_SQL_CONFIG.getDeleteFieldList();
+    }
     /**
      * 获取配置
      *

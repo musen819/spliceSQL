@@ -90,6 +90,21 @@ public class GlobalConfig {
     private String fieldsReflectionSheet = "reflection";
 
     /**
+     * 是否有需要删除字段
+     */
+    private String deleteFieldsOrNot = String.valueOf(true);
+
+    /**
+     * 删除字段配置存放位置
+     */
+    private String deleteFieldsConfigPath = OtherUtils.getFilePath();
+
+    /**
+     * 删除字段配置存放Sheet页
+     */
+    private String deleteFieldsConfigSheet = "deleteFields";
+
+    /**
      * 是否有需要计算的字段
      */
     private String needCalculatedField = String.valueOf(true);
@@ -100,19 +115,34 @@ public class GlobalConfig {
     private String needCacheCalculatedFieldClass = String.valueOf(true);
 
     /**
+     * 是否需要重新编译字段加载类
+     */
+    private String recompileOrNot = String.valueOf(true);
+
+    /**
+     * 字段计算配置位置
+     */
+    private String calculatedClassConfigPath = OtherUtils.getFilePath();
+
+    /**
+     * 字段计算配置Sheet页名字
+     */
+    private String calculatedClassConfigSheet = "fieldsCalculated";
+
+    /**
      * 字段计算类位置
      */
-    private String calculatedClassPath = OtherUtils.getFilePath();
+    private String calculatedClassPath = String.valueOf(OtherUtils.getJarPath());
 
     /**
      * 字段计算类类名
      */
-    private String calculatedClassName = "FieldsCalculated.java";
+    private String calculatedClassName = "FieldsCalculated";
 
     /**
      * 字段计算类编译后存放位置
      */
-    private String compileCalculatedClassName = OtherUtils.getFilePath();
+    private String compileCalculatedClassName = String.valueOf(OtherUtils.getJarPath());
 
     /**
      * 结果存放的位置

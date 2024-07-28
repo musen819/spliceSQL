@@ -1,3 +1,5 @@
+import com.musen.utils.FieldsCalculatedClassUtils;
+import com.musen.utils.LoadConfigUtils;
 import org.junit.Test;
 
 import javax.tools.JavaCompiler;
@@ -61,5 +63,12 @@ public class FieldsCalculatedTest {
 
         // 关闭自定义的类加载器
         classLoader.close();
+    }
+
+    @Test
+    public void testInvokeMethod () {
+        LoadConfigUtils.init();
+        System.out.println(FieldsCalculatedClassUtils.invokeMethod("sampleMethod"));
+        System.out.println(FieldsCalculatedClassUtils.invokeMethod("getPremPeriodType", "1"));
     }
 }

@@ -2,7 +2,9 @@ package com.musen.config;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,5 +31,16 @@ public class SpliceSqlConfig {
      */
     private Map<String, String> fieldsReflectionMap = new HashMap<>();
 
+    /**
+     * 字段计算List
+     * key 字段名
+     * value
+     */
+    private List<FieldCalculated> fieldCalculatedList = new ArrayList<>();
+
+    /**
+     * 字段删除List
+     */
+    private List<String> deleteFieldList = new ArrayList<>();
 
 }

@@ -75,13 +75,12 @@ public class AnalyzeInsert implements AnalyzeSql{
         } else {
             throw new RuntimeException("字段替换失败");
         }
-        Map<String, String> fieldsValueMap = map;
         ExpressionList<Column> columns = insert.getColumns();
         ExpressionList<Expression> values = (ExpressionList<Expression>) insert.getValues().getExpressions();
         for (int i = 0; i < columns.size(); i++) {
             String columnName = columns.get(i).getColumnName();
-            if (fieldsValueMap.containsKey(columnName) && i < values.size()) {
-                String newValue = fieldsValueMap.get(columnName);
+            if (map.containsKey(columnName) && i < values.size()) {
+                String newValue = map.get(columnName);
                 values.set(i, new StringValue(newValue));
             }
         }

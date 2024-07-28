@@ -32,6 +32,8 @@ public class SqlConfigListener implements ReadListener<Map<Integer, String>> {
             sqlConfig.setSqlType(data.get(0));
             sqlConfig.setTableName(data.get(1));
         }
+
+        // 判断是否为固定值
         boolean isFixed = OtherUtils.isTrue(data.get(4));
         if (isFixed) {
             sqlConfig.getFieldsValueMap().put(data.get(2), data.getOrDefault(3, null));
