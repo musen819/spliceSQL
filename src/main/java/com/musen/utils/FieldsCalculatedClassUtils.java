@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.List;
 
 /**
  * @Author: musen
@@ -35,11 +36,14 @@ public class FieldsCalculatedClassUtils {
      * @param methodName
      * @return
      */
-    public static String invokeMethod(String methodName, Object ... params) {
+    public static String invokeMethod(String methodName, List<String> paramsList) {
 
         Class<?> loadedClass = getFieldsCalculatedClass();
-
-        Class<?>[] parameterTypes = new Class<?>[params.length];
+        String[] params = new String[paramsList.size()];
+        for (int i = 0; i < paramsList.size(); i++) {
+            params[i] = paramsList.get(i);
+        }
+        Class<?>[] parameterTypes = new Class<?>[paramsList.size()];
         for (int i = 0; i < params.length; i++) {
             // 读取的时候 会校验参数不能为空  如果参数可能为空 需要专门对空参数进行处理
             // 因为如果 params[i] == null 的话 params[i].getClass() 会报错
@@ -59,7 +63,7 @@ public class FieldsCalculatedClassUtils {
     }
 
     /**
-     * 获取实例
+     * 获取类对象
      */
     public static Class<?> getFieldsCalculatedClass() {
         if (!OtherUtils.isTrue(GLOBAL_CONFIG.getNeedCacheCalculatedFieldClass())) {
@@ -140,7 +144,7 @@ public class FieldsCalculatedClassUtils {
                 throw new RuntimeException("编译失败");
             }
         } catch (RuntimeException e) {
-            throw new RuntimeException("编译失败", e);
+            throw new RuntimeException(String.format("编译失败, sourcePath = %s, outputPath = %s",sourcePath, outputPath), e);
         }
 
     }

@@ -129,22 +129,22 @@ public class LoadConfigUtils {
      *
      * @return
      */
-    public static List<FieldCalculated> getFieldCalculatedList() {
+    public static Map<String, FieldCalculated> getFieldCalculatedMap() {
         if (!isTrue(LoadConfigUtils.getGlobalConfig().getNeedCalculatedField())) {
             throw new RuntimeException("needCalculatedField = false, 不能调用获取字段计算配置方法");
         }
-        if (SPLICE_SQL_CONFIG.getFieldCalculatedList() != null && SPLICE_SQL_CONFIG.getFieldCalculatedList().size() != 0) {
-            return SPLICE_SQL_CONFIG.getFieldCalculatedList();
+        if (SPLICE_SQL_CONFIG.getFieldCalculatedMap() != null && SPLICE_SQL_CONFIG.getFieldCalculatedMap().size() != 0) {
+            return SPLICE_SQL_CONFIG.getFieldCalculatedMap();
         }
-        String calculatedClassConfigPath = LoadConfigUtils.getGlobalConfig().getCompileCalculatedClassName();
+        String calculatedClassConfigPath = LoadConfigUtils.getGlobalConfig().getCalculatedClassConfigPath();
         String calculatedClassConfigSheet = LoadConfigUtils.getGlobalConfig().getCalculatedClassConfigSheet();
         if (StrUtil.isBlank(calculatedClassConfigPath) || StrUtil.isBlank(calculatedClassConfigSheet)) {
             throw new RuntimeException("needCalculatedField = true, calculatedClassConfigPath 和 calculatedClassConfigSheet 不能为空");
         }
         log.info("字段计算配置 path：{}, sheet: {}", calculatedClassConfigPath, calculatedClassConfigSheet);
         EasyExcel.read(calculatedClassConfigPath, new FieldCalculatedListener()).sheet(calculatedClassConfigSheet).doRead();
-        log.info("fieldCalculatedList = {}", JSONUtil.toJsonStr(SPLICE_SQL_CONFIG.getFieldCalculatedList()));
-        return SPLICE_SQL_CONFIG.getFieldCalculatedList();
+        log.info("getFieldCalculatedMap = {}", JSONUtil.toJsonStr(SPLICE_SQL_CONFIG.getFieldCalculatedMap()));
+        return SPLICE_SQL_CONFIG.getFieldCalculatedMap();
     }
 
     /**

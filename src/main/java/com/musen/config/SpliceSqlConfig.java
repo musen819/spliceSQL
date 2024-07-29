@@ -36,7 +36,7 @@ public class SpliceSqlConfig {
      * key 字段名
      * value
      */
-    private List<FieldCalculated> fieldCalculatedList = new ArrayList<>();
+    private Map<String, FieldCalculated> fieldCalculatedMap = new HashMap<>();
 
     /**
      * 字段删除List

@@ -1,6 +1,8 @@
 package com.musen.analyze;
 
 import cn.hutool.core.util.StrUtil;
+import com.musen.config.FieldCalculated;
+import com.musen.utils.FieldsCalculatedClassUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Expression;
@@ -12,6 +14,8 @@ import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.insert.Insert;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static com.musen.utils.OtherUtils.isTrue;
@@ -65,6 +69,7 @@ public class AnalyzeInsert implements AnalyzeSql{
         insert = (Insert) replace(insert, SQL_CONFIG.getFieldsValueMap());
         SQL_CONFIG.setStatement(insert);
 
+
     }
 
     @Override
@@ -87,5 +92,57 @@ public class AnalyzeInsert implements AnalyzeSql{
         return insert;
     }
 
+    public Statement calculated(Statement statement, Map<String, FieldCalculated> calculatedMap) {
+        Insert insert;
+        if (statement instanceof Insert) {
+            insert = (Insert) statement;
+        } else {
+            throw new RuntimeException("字段计算失败");
+        }
+        ExpressionList<Column> columns = insert.getColumns();
+        ExpressionList<Expression> values = (ExpressionList<Expression>) insert.getValues().getExpressions();
+        for (int i = 0; i < columns.size(); i++) {
+            String columnName = columns.get(i).getColumnName();
+            if (calculatedMap.containsKey(columnName) && i < values.size()) {
+                FieldCalculated fieldCalculated = calculatedMap.get(columnName);
+                List<String> argumentFields = fieldCalculated.getParameters();
+                List<String> argumentValues = new ArrayList<String>();
+                for (String argument : argumentFields) {
+                    int index = -1;
+                    for (int j = 0; j < columns.size(); j++) {
+                        if (columns.get(j).getColumnName().equals(argument)) {
+                            index = j;
+                            break;
+                        }
+                    }
+                    if (index == -1) {
+                        throw new RuntimeException("index == -1");
+                    }
+                    argumentValues.add(values.get(index).toString());
+                }
+                String newValue = FieldsCalculatedClassUtils.invokeMethod(fieldCalculated.getMethodName(), argumentValues);
+                values.set(i, new StringValue(newValue));
+            }
+        }
+        return insert;
+    }
+
+    public Statement deleteField(Statement statement, List<String> deleteFieldList) {
+        Insert insert;
+        if (statement instanceof Insert) {
+            insert = (Insert) statement;
+        } else {
+            throw new RuntimeException("字段删除失败");
+        }
+        ExpressionList<Column> columns = insert.getColumns();
+        ExpressionList<Expression> values = (ExpressionList<Expression>) insert.getValues().getExpressions();
+        for (int i = 0; i < columns.size(); i++) {
+            if (deleteFieldList.contains(columns.get(i).getColumnName())) {
+                columns.remove(i);
+                values.remove(i);
+            }
+        }
+        return insert;
+    }
 
 }

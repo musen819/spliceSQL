@@ -1,5 +1,6 @@
-import com.musen.utils.FieldsCalculatedClassUtils;
+import com.musen.analyze.AnalyzeInsert;
 import com.musen.utils.LoadConfigUtils;
+import net.sf.jsqlparser.statement.Statement;
 import org.junit.Test;
 
 import javax.tools.JavaCompiler;
@@ -68,7 +69,9 @@ public class FieldsCalculatedTest {
     @Test
     public void testInvokeMethod () {
         LoadConfigUtils.init();
-        System.out.println(FieldsCalculatedClassUtils.invokeMethod("sampleMethod"));
-        System.out.println(FieldsCalculatedClassUtils.invokeMethod("getPremPeriodType", "1"));
+        Statement statement = LoadConfigUtils.getSqlConfig().getStatement();
+        statement = new AnalyzeInsert().calculated(statement, LoadConfigUtils.getFieldCalculatedMap());
+        statement = new AnalyzeInsert().deleteField(statement, LoadConfigUtils.getDeleteFieldList());
+        System.out.println(statement);
     }
 }

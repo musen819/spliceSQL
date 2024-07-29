@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.util.ListUtils;
+import com.musen.analyze.AnalyzeInsert;
 import com.musen.analyze.AnalyzeSqlEnum;
 import com.musen.config.GlobalConfig;
 import com.musen.config.SqlConfig;
@@ -12,7 +13,9 @@ import com.musen.utils.OtherUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.statement.Statement;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -102,7 +105,7 @@ public class LoadDataListener extends AnalysisEventListener<Map<Integer, String>
 
     @Override
     public void invoke(Map<Integer, String> data, AnalysisContext context) {
-        Map<String, String> datamap = new HashMap<>();
+        Map<String, Object> dataMap = new HashMap<>();
         // 1. 通过表头 替换掉原statement 中的部分value
         Integer index = 0;
         for (Map.Entry<Integer, String> entry : data.entrySet()) {
@@ -115,11 +118,16 @@ public class LoadDataListener extends AnalysisEventListener<Map<Integer, String>
             if (FIELDS_REFLECTION_MAP.containsKey(columnName)) {
                 columnName = FIELDS_REFLECTION_MAP.get(columnName);
             }
-            datamap.put(columnName, entry.getValue());
+            dataMap.put(columnName, entry.getValue());
         }
         // 获取类型
         String className = AnalyzeSqlEnum.getClassName(SQL_CONFIG.getSqlType());
-        statement = OtherUtils.callMethod(className, "replace", statement, datamap);
+        statement = OtherUtils.callMethod(className, "replace", statement, dataMap);
+
+        // 字段计算
+        //statement = OtherUtils.callMethod(className, "calculated", statement, LoadConfigUtils.getSpliceSqlConfig().getFieldCalculatedMap());
+        statement = new AnalyzeInsert().calculated(statement, LoadConfigUtils.getFieldCalculatedMap());
+
         cachedDataList.add(statement.toString());
         if (cachedDataList.size() == BATCH_COUNT) {
             saveData();

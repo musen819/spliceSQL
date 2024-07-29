@@ -13,7 +13,10 @@ public class FieldsCalculated {
      * @return
      */
     public static String getPremPeriodType (String premPeriod) {
-        if ("1".equals(premPeriod) || "0".equals(premPeriod)) {
+        System.out.println(premPeriod);
+        String temp = "'1'";
+        // sql 解析有问题
+        if (temp.equals(premPeriod) || "0".equals(premPeriod)) {
             return "1";
         }
         return "2";
@@ -30,5 +33,9 @@ public class FieldsCalculated {
             return "0";
         }
         return premPeriod;
+    }
+
+    public static String getADDITIONALPRODUCTFLAG (String planName) {
+        return planName;
     }
 }

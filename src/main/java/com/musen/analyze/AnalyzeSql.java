@@ -1,10 +1,12 @@
 package com.musen.analyze;
 
+import com.musen.config.FieldCalculated;
 import com.musen.config.GlobalConfig;
 import com.musen.config.SqlConfig;
 import com.musen.utils.LoadConfigUtils;
 import net.sf.jsqlparser.statement.Statement;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,8 +17,8 @@ import java.util.Map;
 public interface AnalyzeSql {
 
     SqlConfig SQL_CONFIG = LoadConfigUtils.getSqlConfig();
-
     GlobalConfig GLOBAL_CONFIG = LoadConfigUtils.getGlobalConfig();
+    List<String> deleteFieldList = LoadConfigUtils.getDeleteFieldList();
 
     /**
      * 解析 sql
@@ -33,4 +35,6 @@ public interface AnalyzeSql {
     void analyzeSql();
 
     Statement replace(Statement statement, Map<String, String> map);
+
+    Statement calculated (Statement statement, Map<String, FieldCalculated> fieldCalculatedMap);
 }

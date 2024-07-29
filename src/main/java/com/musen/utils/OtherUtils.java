@@ -107,7 +107,7 @@ public class OtherUtils {
         }
     }
 
-    public static Statement callMethod(String className, String methodName, Statement statement, Map<String, String> map) {
+    public static Statement callMethod(String className, String methodName, Statement statement, Map<String, Object> map) {
         try {
             Class<?> clazz = Class.forName(className);
             Method method = clazz.getMethod(methodName, Statement.class, Map.class);

@@ -50,7 +50,7 @@ public class Splice {
             try {
                 EasyExcel.read(dataFilePath, new LoadDataListener()).sheet(dataFileSheet).doRead();
             } catch (RuntimeException e) {
-                throw new RuntimeException(String.format("dataFilePath = %s, dataFileSheet = %s 文件路径不正确", dataFilePath, dataFileSheet));
+                throw new RuntimeException(String.format("dataFilePath = %s, dataFileSheet = %s 文件路径不正确", dataFilePath, dataFileSheet), e);
             }
         }
         log.info("开始读取数据，生成SQL");
