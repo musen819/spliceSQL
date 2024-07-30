@@ -28,11 +28,11 @@ public class Splice {
 
     public void spliceSql(){
 
-        // 1. 判断是否需要展示或者保存未加载的SQL
+        // 1. 判断是否需要展示或者保存未加载数据的SQL
         if (OtherUtils.isTrue(globalConfig.getNeedPreassembly())) {
             log.info("未加载数据的SQL：{}", statement);
         }
-        // todo
+
         // 1.2 保存未加载数据的SQL
         if (OtherUtils.isTrue(globalConfig.getSavePreassembly())) {
             String savePreassemblyPath = globalConfig.getSavePreassemblyPath();
@@ -46,6 +46,7 @@ public class Splice {
             throw new RuntimeException(String.format("dataFilePath = %s, dataFileSheetList = %s, dataFilePath 或 dataFileSheetList 不能为空",
                     dataFilePath, JSONUtil.toJsonStr(dataFileSheetList)));
         }
+        log.info("开始读取数据，生成SQL");
         for (String dataFileSheet : dataFileSheetList) {
             try {
                 EasyExcel.read(dataFilePath, new LoadDataListener()).sheet(dataFileSheet).doRead();
@@ -53,12 +54,7 @@ public class Splice {
                 throw new RuntimeException(String.format("dataFilePath = %s, dataFileSheet = %s 文件路径不正确", dataFilePath, dataFileSheet), e);
             }
         }
-        log.info("开始读取数据，生成SQL");
-        // 使用模板方法  因为读数据的时候 每读一条数据 都会执行一次 invoke方法
-
 
     }
-
-
 
 }

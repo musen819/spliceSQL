@@ -13,10 +13,7 @@ public class FieldsCalculated {
      * @return
      */
     public static String getPremPeriodType (String premPeriod) {
-        System.out.println(premPeriod);
-        String temp = "'1'";
-        // sql 解析有问题
-        if (temp.equals(premPeriod) || "0".equals(premPeriod)) {
+        if ("1".equals(premPeriod) || "0".equals(premPeriod)) {
             return "1";
         }
         return "2";

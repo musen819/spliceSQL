@@ -1,5 +1,5 @@
-import com.musen.analyze.AnalyzeInsert;
 import com.musen.utils.LoadConfigUtils;
+import com.musen.utils.OtherUtils;
 import net.sf.jsqlparser.statement.Statement;
 import org.junit.Test;
 
@@ -70,8 +70,11 @@ public class FieldsCalculatedTest {
     public void testInvokeMethod () {
         LoadConfigUtils.init();
         Statement statement = LoadConfigUtils.getSqlConfig().getStatement();
-        statement = new AnalyzeInsert().calculated(statement, LoadConfigUtils.getFieldCalculatedMap());
-        statement = new AnalyzeInsert().deleteField(statement, LoadConfigUtils.getDeleteFieldList());
+        String sqlType = LoadConfigUtils.getSqlConfig().getSqlType();
+        statement = (Statement) OtherUtils.invokeBySqlType(sqlType, "calculated", statement, LoadConfigUtils.getFieldCalculatedMap());
+        statement = (Statement) OtherUtils.invokeBySqlType(sqlType, "deleteField", statement, LoadConfigUtils.getDeleteFieldList());
+        /*statement = new AnalyzeInsert().calculated(statement, LoadConfigUtils.getFieldCalculatedMap());
+        statement = new AnalyzeInsert().deleteField(statement, LoadConfigUtils.getDeleteFieldList());*/
         System.out.println(statement);
     }
 }

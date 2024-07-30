@@ -4,8 +4,6 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.util.ListUtils;
-import com.musen.analyze.AnalyzeInsert;
-import com.musen.analyze.AnalyzeSqlEnum;
 import com.musen.config.GlobalConfig;
 import com.musen.config.SqlConfig;
 import com.musen.utils.LoadConfigUtils;
@@ -121,20 +119,13 @@ public class LoadDataListener extends AnalysisEventListener<Map<Integer, String>
             dataMap.put(columnName, entry.getValue());
         }
         // 获取类型
-        String className = AnalyzeSqlEnum.getClassName(SQL_CONFIG.getSqlType());
-        statement = OtherUtils.callMethod(className, "replace", statement, dataMap);
-
-        // 字段计算
-        //statement = OtherUtils.callMethod(className, "calculated", statement, LoadConfigUtils.getSpliceSqlConfig().getFieldCalculatedMap());
-        statement = new AnalyzeInsert().calculated(statement, LoadConfigUtils.getFieldCalculatedMap());
+        statement = (Statement) OtherUtils.invokeBySqlType(SQL_CONFIG.getSqlType(), "replace", statement, dataMap);
+        statement = (Statement) OtherUtils.invokeBySqlType(SQL_CONFIG.getSqlType(), "calculated", statement, LoadConfigUtils.getFieldCalculatedMap());
 
         cachedDataList.add(statement.toString());
         if (cachedDataList.size() == BATCH_COUNT) {
             saveData();
         }
-        // 1.1 替换的时候  注意查看 是否有映射字段
-        // 1.2 同时计算有特殊逻辑的
-        // 2. 检查sql是否还有没有赋值的
     }
 
 
@@ -154,7 +145,7 @@ public class LoadDataListener extends AnalysisEventListener<Map<Integer, String>
     private void saveData(){
         for (String sql : cachedDataList) {
             try {
-                BUFFERED_WRITER.write(sql + "\n");
+                BUFFERED_WRITER.write(sql + ";" + "\n");
                 nums++;
             } catch (IOException e) {
                 log.error("写文件失败", e);

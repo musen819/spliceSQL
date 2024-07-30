@@ -15,7 +15,7 @@ public class FileUtilsTest {
 
     @Test
     public void testGetFilePath() {
-        String configFile = OtherUtils.getFilePath();
+        String configFile = OtherUtils.getDefaultConfigurationFilePath();
         System.out.println(configFile);
         Assert.assertNotNull(configFile);
     }

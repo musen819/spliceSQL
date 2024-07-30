@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Author: musen
- * @CreateTime: ${YEAR}-${MONTH}-${DAY}  ${HOUR}:${MINUTE}
+ * @CreateTime:
  * @Description:
  */
 @Slf4j
@@ -20,5 +20,6 @@ public class Main {
         new Splice().spliceSql();
 
         // 3. 整理保存日志
+
     }
 }

@@ -32,7 +32,7 @@ public class GlobalConfig {
     /**
      * sqlConfig Excel的位置
      */
-    private String sqlConfigPath = OtherUtils.getFilePath();
+    private String sqlConfigPath = OtherUtils.getDefaultConfigurationFilePath();
 
     /**
      * sqlConfig sheet页名字
@@ -52,7 +52,7 @@ public class GlobalConfig {
     /**
      * 预组装sql保存路径
      */
-    private String savePreassemblyPath = OtherUtils.getFilePath();
+    private String savePreassemblyPath = OtherUtils.getDefaultConfigurationFilePath();
 
     /**
      * 预组装sql保存sheet页
@@ -82,7 +82,7 @@ public class GlobalConfig {
     /**
      * 字段映射配置的文件位置
      */
-    private String fieldsReflectionPath = OtherUtils.getFilePath();
+    private String fieldsReflectionPath = OtherUtils.getDefaultConfigurationFilePath();
 
     /**
      * 字段映射配置 sheet页名字
@@ -97,7 +97,7 @@ public class GlobalConfig {
     /**
      * 删除字段配置存放位置
      */
-    private String deleteFieldsConfigPath = OtherUtils.getFilePath();
+    private String deleteFieldsConfigPath = OtherUtils.getDefaultConfigurationFilePath();
 
     /**
      * 删除字段配置存放Sheet页
@@ -122,7 +122,7 @@ public class GlobalConfig {
     /**
      * 字段计算配置位置
      */
-    private String calculatedClassConfigPath = OtherUtils.getFilePath();
+    private String calculatedClassConfigPath = OtherUtils.getDefaultConfigurationFilePath();
 
     /**
      * 字段计算配置Sheet页名字
@@ -148,6 +148,11 @@ public class GlobalConfig {
      * 结果存放的位置
      */
     private String resultFilePath = OtherUtils.getJarPath() + "\\resultFile.sql";
+
+    /**
+     * 打印详细日志
+     */
+    private String printLogs = String.valueOf(true);
 
     /**
      * 是否保存日志

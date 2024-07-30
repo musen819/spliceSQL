@@ -8,8 +8,6 @@ import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -37,33 +35,18 @@ public class FieldsCalculatedClassUtils {
      * @return
      */
     public static String invokeMethod(String methodName, List<String> paramsList) {
-
         Class<?> loadedClass = getFieldsCalculatedClass();
         String[] params = new String[paramsList.size()];
+        Class<?>[] parameterTypes = new Class<?>[paramsList.size()];
         for (int i = 0; i < paramsList.size(); i++) {
             params[i] = paramsList.get(i);
+            parameterTypes[i] = paramsList.get(i).getClass();
         }
-        Class<?>[] parameterTypes = new Class<?>[paramsList.size()];
-        for (int i = 0; i < params.length; i++) {
-            // 读取的时候 会校验参数不能为空  如果参数可能为空 需要专门对空参数进行处理
-            // 因为如果 params[i] == null 的话 params[i].getClass() 会报错
-            parameterTypes[i] = params[i].getClass();
-        }
-
-        // 获取指定方法名的方法
-        Method method;
-        try {
-            method = loadedClass.getMethod(methodName, parameterTypes);
-            return (String) method.invoke(null, params);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(String.format("获取方法失败, 方法名： %s", methodName), e);
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(String.format("方法调用失败, 方法名： %s", methodName), e);
-        }
+        return (String) OtherUtils.invoke(loadedClass, methodName, parameterTypes, params);
     }
 
     /**
-     * 获取类对象
+     * 获取类
      */
     public static Class<?> getFieldsCalculatedClass() {
         if (!OtherUtils.isTrue(GLOBAL_CONFIG.getNeedCacheCalculatedFieldClass())) {
@@ -117,7 +100,6 @@ public class FieldsCalculatedClassUtils {
                 throw new RuntimeException(e);
             }
         }
-
     }
 
     /**

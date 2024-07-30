@@ -18,22 +18,17 @@ import java.util.Map;
 @Slf4j
 public class GlobalConfigListener extends AnalysisEventListener<Map<Integer, String>> {
 
-    static GlobalConfig globalConfig = new GlobalConfig();
+    private static GlobalConfig globalConfig = new GlobalConfig();
 
     @Override
     public void invoke(Map<Integer, String> data, AnalysisContext context) {
-        /*log.info("从 {} 的 {} 中解析到一条数据：{}",
-                context.readWorkbookHolder().getFile(),
-                context.readSheetHolder().getSheetName(),
-                JSONUtil.toJsonStr(data));*/
-
         saveToClass(data.get(1), data.getOrDefault(2, null));
     }
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
         LoadConfigUtils.getSpliceSqlConfig().setGlobalConfig(globalConfig);
-        log.info("globalConfig 读取完成");
+        log.info("GlobalConfig 读取完成");
     }
 
     /**
@@ -43,11 +38,11 @@ public class GlobalConfigListener extends AnalysisEventListener<Map<Integer, Str
      * @param value
      */
     private void saveToClass (String key, String value) {
+        // 如果碰到空行  或者  value为空 跳出本次循环
         if (StrUtil.isBlank(key) || StrUtil.isBlank(value)) {
-            // 如果碰到空行  或者  value为空 跳出本次循环
             return;
         }
-        // 数据源 有多个 sheet页
+        // 数据源有多个Sheet页 特殊处理
         if ("dataFileSheet".equals(key)) {
             globalConfig.getDataFileSheet().add(value);
             return;
@@ -60,7 +55,7 @@ public class GlobalConfigListener extends AnalysisEventListener<Map<Integer, Str
             field.setAccessible(true);
             field.set(globalConfig, value);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("将数据保存到 GlobalConfig 中时失败", e);
         }
     }
 }

@@ -33,5 +33,10 @@ public class SqlConfig {
     /**
      * 为了方便快速解析SQL 引入jsqlparser
      */
-    Statement statement = null;
+    private Statement statement = null;
+
+    /**
+     * fieldsValueMap 为空标志
+     */
+    private boolean mapNullFlag = false;
 }
