@@ -132,10 +132,12 @@ public class AnalyzeInsert implements AnalyzeSql{
         }
         ExpressionList<Column> columns = insert.getColumns();
         ExpressionList<Expression> values = (ExpressionList<Expression>) insert.getValues().getExpressions();
-        for (int i = 0; i < columns.size(); i++) {
+        for (int i = 0; i < columns.size(); ) {
             if (deleteFieldList.contains(columns.get(i).getColumnName())) {
                 columns.remove(i);
                 values.remove(i);
+            } else {
+                i++;
             }
         }
         return insert;
