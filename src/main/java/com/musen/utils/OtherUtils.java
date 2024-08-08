@@ -171,6 +171,7 @@ public class OtherUtils {
         if (isTrue(LoadConfigUtils.getGlobalConfig().getPrintLogs())) {
             log.info(message);
         }
+
     }
 
 

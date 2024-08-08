@@ -161,7 +161,7 @@ public class AnalyzeInsert implements AnalyzeSql{
                 FieldCalculated fieldCalculated = calculatedMap.get(columnName);
                 // 拿到计算字段配置类
                 List<String> argumentFields = fieldCalculated.getParameters();
-                // 组装真是的数据
+                // 组装真实的数据
                 List<String> argumentValues = new ArrayList<String>();
                 for (String argument : argumentFields) {
                     int index = -1;
